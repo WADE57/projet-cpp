@@ -15,14 +15,16 @@ PARAMETRE/
 RAPPORT/
 SRC/
 VTK/
-- **SRC/main.cpp** : point d'entree, lance les deux modeles.
-- SRC/matrice.cpp + SRC/resolution.cpp : assemblage et resolution du cas stationnaire.
-SRC/matInst.cpp + SRC/resolutionInst.cpp : assemblage et resolution du cas instationnaire.
-SRC/parametres.cpp : lecture de PARAMETRE/simu.cfg.
-PARAMETRE/simu.cfg : parametres physiques et numeriques.
-CSV/ : resultats tabulaires (stationnaire.csv, instationnaire.csv).
-VTK/ : sorties pour visualisation.
-RAPPORT/rapport.pdf : rapport du projet.
+````
+
+- `SRC/main.cpp` : point d'entree, lance les deux modeles.
+- `SRC/matrice.cpp` + `SRC/resolution.cpp` : assemblage et resolution du cas stationnaire.
+- `SRC/matInst.cpp` + `SRC/resolutionInst.cpp` : assemblage et resolution du cas instationnaire.
+- `SRC/parametres.cpp` : lecture de `PARAMETRE/simu.cfg`.
+- `PARAMETRE/simu.cfg` : parametres physiques et numeriques.
+- `CSV/` : resultats tabulaires (stationnaire.csv, instationnaire.csv).
+- `VTK/` : sorties pour visualisation.
+- `RAPPORT/rapport.pdf` : rapport du projet.
 ```
 
 ## Parametres utilises
