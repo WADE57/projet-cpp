@@ -1,4 +1,4 @@
-# Simulation thermique 1D en C++23
+# Simulation thermique 1D en C++
 
 Projet de simulation thermique avec deux modeles:
 - **stationnaire** (regime permanent)
