@@ -25,15 +25,14 @@ VTK/
 - `CSV/` : resultats tabulaires (stationnaire.csv, instationnaire.csv).
 - `VTK/` : sorties pour visualisation.
 - `RAPPORT/rapport.pdf` : rapport du projet.
-```
 
 ## Parametres utilises
 
-Le fichier PARAMETRE/simu.cfg contient notamment:
+Le fichier `PARAMETRE/simu.cfg` contient notamment:
 
-Geometrie: Lx, Ly, Lz
-Discretisation spatiale et temporelle: M, N
-Maillage de visualisation VTK: Mx, My, Mz
-Proprietes physiques: rho, Cp, kappa, hc, Te, Phip
-Temps final: TFinal
+- Geometrie: `Lx`, `Ly`, `Lz`
+- Discretisation spatiale et temporelle: `M`, `N`
+- Maillage de visualisation VTK: `Mx`, `My`, `Mz`
+- Proprietes physiques: `rho`, `Cp`, `kappa`, `hc`, `Te`, `Phip`
+- Temps final: `TFinal`
 
