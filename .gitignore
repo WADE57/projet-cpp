@@ -1,0 +1,14 @@
+# Build
+build/
+cmake-build-*/
+SRC/main
+*.o
+*.out
+
+# Generated data / outputs
+VTK/INSTATIONNAIRE/
+*.vtk
+
+# OS/editor
+.DS_Store
+.vscode/
