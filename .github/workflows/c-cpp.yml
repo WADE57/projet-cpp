@@ -13,11 +13,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+
+    - name: Installer g++
+      run: sudo apt-get update && sudo apt-get install -y g++
+
+    - name: Compilation
+      run: |
+        g++ -std=c++23 -O2 SRC/main.cpp SRC/parametres.cpp SRC/matrice.cpp SRC/resolution.cpp SRC/matInst.cpp SRC/resolutionInst.cpp -o SRC/main
+
+    - name: Test d'exécution
+      run: |
+        ./SRC/main PARAMETRE/simu.cfg
