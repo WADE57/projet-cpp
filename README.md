@@ -28,47 +28,44 @@ VTK/
 
 ## Parametres utilises
 
-Le fichier `PARAMETRE/simu.cfg` contient notamment:
+Le fichier `PARAMETRE/simu.cfg` est lu dans un **ordre fixe**, par exemple:
 
-- Geometrie: `Lx`, `Ly`, `Lz`
-- Discretisation spatiale et temporelle: `M`, `N`
-- Maillage de visualisation VTK: `Mx`, `My`, `Mz`
-- Proprietes physiques: `rho`, `Cp`, `kappa`, `hc`, `Te`, `Phip`
-- Temps final: `TFinal`
-
-Exemple de configuration:
-
-```ini
-Lx = 0.04 
-Ly = 0.004 
-Lz = 0.05
-M = 10000
-Phip = 125000
-hc = 200
-rho = 2700
-Cp = 940
-kappa = 164
-Te = 20
-stationary = 0
-TFinal = 300
-N = 600
-Mx = 50 
-My = 10 
-Mz = 30
+```properties
+Lx 0.04 Ly 0.004 Lz 0.05
+M 10000
+Phip 125000
+hc 200
+rho 2700
+Cp 940
+kapa 164
+Te 20
+stationary 0
+TFinal 300
+N 600
+Mx 50 My 10 Mz 30
 ```
+Parametres principaux:
+- Geometrie: `Lx`, `Ly`, `Lz`
+- Discretisation: `M` (nombre de points), `N` (nombre de pas de temps), `Mx`, `My`, `Mz` (maillage)
+- Proprietes physiques: `rho`, `Cp`, `kapa`
+- Conditions aux limites: `Phip` (flux), `hc` (coefficient de convection), `Te` (temperature exterieure)
+- `TFinal` temps final.
+- Drapeau lu depuis le fichier: `stationary` 
+
 ## Compilation et execution
 
-- Compilateur: g++ (C++23)
+
+ - Compilateur: `g++` (C++23)
 
 Depuis la racine du projet:
 
 ```bash
-g++ -std=c++23 -O2 main.cpp parametres.cpp matrice.cpp resolution.cpp matInst.cpp resolutionInst.cpp -o SRC/main
-```
+g++ -std=c++23 -O2 SRC/main.cpp SRC/parametres.cpp SRC/matrice.cpp SRC/resolution.cpp SRC/matInst.cpp SRC/resolutionInst.cpp -o SRC/main
 Version debug(affichage supplementaire):
-
+```
+Version debug:
 ```bash
-g++ -std=c++23 -DDEBUG -g main.cpp parametres.cpp matrice.cpp resolution.cpp matInst.cpp resolutionInst.cpp -o SRC/main
+g++ -std=c++23 -DDEBUG -g SRC/main.cpp SRC/parametres.cpp SRC/matrice.cpp SRC/resolution.cpp SRC/matInst.cpp SRC/resolutionInst.cpp -o SRC/main
 ```
 
 - Execution:
