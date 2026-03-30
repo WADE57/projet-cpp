@@ -2,25 +2,28 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Installer g++
-      run: sudo apt-get update && sudo apt-get install -y g++
+      - name: Compiler
+        run: |
+          g++ -std=c++23 -O2 \
+            SRC/main.cpp SRC/parametres.cpp SRC/matrice.cpp SRC/resolution.cpp SRC/matInst.cpp SRC/resolutionInst.cpp \
+            -o SRC/main
 
-    - name: Compilation
-      run: |
-        g++ -std=c++23 -O2 SRC/main.cpp SRC/parametres.cpp SRC/matrice.cpp SRC/resolution.cpp SRC/matInst.cpp SRC/resolutionInst.cpp -o SRC/main
+      - name: Preparer dossiers de sortie
+        run: |
+          mkdir -p VTK/INSTATIONNAIRE
+          mkdir -p CSV
 
-    - name: Test d'exécution
-      run: |
-        ./SRC/main PARAMETRE/simu.cfg
+      - name: Executer le programme (depuis SRC)
+        working-directory: SRC
+        run: ./main ../PARAMETRE/simu.cfg
