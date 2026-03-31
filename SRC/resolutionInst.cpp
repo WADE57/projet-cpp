@@ -21,53 +21,25 @@ void AfMat(std::vector<std::vector<double>> matrice)
     std::cout << "\ntaille de la matrice = " << matrice.size() << std::endl;
 }
 
-// INSTANCIATION DE LA CLASSE PARAMETRE
-Parametre par("../PARAMETRE/simu.cfg");
-
-// Initialisation des paramètres
-double kappaInsta = par.kappa;
-double hInsta = par.Lx / par.M;
-double hcInsta = par.hc;
-double SInsta = par.Ly * par.Lz;
-double pInsta = 2 * (par.Ly + par.Lz);
-int MInsta = par.M;
-double TeInsta = par.Te;
-double Phi_pInsta = par.Phi_p;
-double rhoIsnta = par.rho;
-double CpIsnta = par.Cp;
-double TF = par.TFinal;
-int NInsta = par.N;
-double deltaT = TF / NInsta;
-int MxInsta = par.Mx;
-int MyInsta = par.My;
-int MzInsta = par.Mz;
-
-// METHODES
-ResolutionInst::ResolutionInst(MatInst matInsta, int taille)
+// Constructeur ResolutionInst prenant les paramètres nécessaires
+ResolutionInst::ResolutionInst(const Parametre &param)
 {
-    std::vector<double> bInstaRes;
-    std::vector<double> cInstaRes;
-    // remplissage des vecteurs b et c
-    // vecteur b
-    bInstaRes.push_back(matInsta.getDiagInst(0));
-    cInstaRes.push_back(matInsta.getSurDiagInst(0) / bInstaRes[0]);
-
-    for (int k = 1; k < taille - 1; k++)
-    {
-        bInstaRes.push_back(matInsta.getDiagInst(k) - matInsta.getSousDiagInst(k - 1) * cInstaRes[k - 1]);
-        cInstaRes.push_back(matInsta.getSurDiagInst(k) / bInstaRes[k]);
-    }
-    bInstaRes.push_back(matInsta.getDiagInst(taille - 1) - matInsta.getSousDiagInst(taille - 2) * cInstaRes[taille - 2]);
-
-    // remplissage des vecteurs diagonale de L et surDiagonale de U
-    for (int i = 0; i < taille; i++)
-    {
-        diagInstL.push_back(bInstaRes[i]);
-    }
-    for (int i = 0; i < taille - 1; i++)
-    {
-        surDiagInstU.push_back(cInstaRes[i]);
-    }
+    kappaInsta = param.kappa;
+    hInsta = param.Lx / param.M;
+    hcInsta = param.hc;
+    SInsta = param.Ly * param.Lz;
+    pInsta = 2 * (param.Ly + param.Lz);
+    MInsta = param.M;
+    TeInsta = param.Te;
+    Phi_pInsta = param.Phi_p;
+    rhoIsnta = param.rho;
+    CpIsnta = param.Cp;
+    TF = param.TFinal;
+    NInsta = param.N;
+    deltaT = TF / NInsta;
+    MxInsta = param.Mx;
+    MyInsta = param.My;
+    MzInsta = param.Mz;
 }
 
 // Méthode FactoLU() pour le cas instationnaire
@@ -354,13 +326,29 @@ void ResolutionInst::VTKParPasDeTemps(std::vector<std::vector<double>> Solve, in
             fichier << "SCALARS sol" << t << " float" << std::endl;
             fichier << "LOOKUP_TABLE default" << std::endl;
 
+            // for (int k = 0; k < MzInsta; k++)
+            // {
+            //     for (int j = 0; j < MyInsta; j++)
+            //     {
+            //         for (int i = 0; i < MxInsta; i++)
+            //         {
+            //             fichier << Solve[t][i + MxInsta * (j + MyInsta * k)] << std::endl;
+            //         }
+            //     }
+            // }
+
             for (int k = 0; k < MzInsta; k++)
             {
                 for (int j = 0; j < MyInsta; j++)
                 {
                     for (int i = 0; i < MxInsta; i++)
                     {
-                        fichier << Solve[t][i + MxInsta * (j + MyInsta * k)] << std::endl;
+                        int idx = i + MxInsta * (j + MyInsta * k);
+                        // Sécurité : ne pas dépasser la taille réelle du vecteur
+                        if (idx < (int)Solve[t].size())
+                            fichier << Solve[t][idx] << std::endl;
+                        else
+                            fichier << 0 << std::endl; // ou une valeur par défaut
                     }
                 }
             }
