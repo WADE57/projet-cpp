@@ -33,7 +33,7 @@ void afficheVecteur(std::vector<double> vecteur)
 
 int main(int argc, char *argv[])
 {
-    //lire parametres.cfg à l'exécution
+    // lire parametres.cfg à l'exécution
     if (argc < 2)
     {
         std::cout << "Usage: " << argv[0] << " ../PARAMETRE/simu.cfg" << std::endl;
@@ -49,13 +49,14 @@ int main(int argc, char *argv[])
     std::cout << "Lz = " << param.Lz << std::endl;
 #endif
 
-    std::cout << "\n::::::::::::::::::::Modéle Stationnaire:::::::::::::::::::\n" << std::endl;
+    std::cout << "\n::::::::::::::::::::Modéle Stationnaire:::::::::::::::::::\n"
+              << std::endl;
     // Initialisation de la matrice
     std::vector<double> a;
     std::vector<double> b;
     std::vector<double> c;
 
-    Matrice matrice(a, b, c);
+    Matrice matrice(param, a, b, c);
 
     // test de la méthode matriceTridiagonale()
     std::vector<std::vector<double>> matriceTridiagonale = matrice.matriceTridiagonale();
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
 #endif
 
     // test de la méthode resolutionLU()
-    Resolution resolution(matrice, param.M);
+    Resolution resolution(matrice, param.M, param);
 
     // test de la méthode decompositionLU()
     resolution.decompositionLU(matrice, param.M);
@@ -92,29 +93,30 @@ int main(int argc, char *argv[])
     // test de la méthode writeVTKFile()
     resolution.writeVTKFile(X, "../VTK/stationnaire.vtk");
 
-    std::cout << "\n::::::::::::::::::::Modéle Instationnaire:::::::::::::::::\n" << std::endl;
+    std::cout << "\n::::::::::::::::::::Modéle Instationnaire:::::::::::::::::\n"
+              << std::endl;
 
     // Initialisation de la matrice instationnaire
     std::vector<double> aInst;
     std::vector<double> bInst;
     std::vector<double> cInst;
 
-    MatInst matriceInst(aInst, bInst, cInst);
+    MatInst matriceInst(param, aInst, bInst, cInst);
 
     // test de la méthode matriceTridiagInst()
     std::vector<std::vector<double>> matriceTridiagonaleInst = matriceInst.matriceTridiagInst();
-    #ifdef DEBUG
+#ifdef DEBUG
     afficheMatrice(matriceTridiagonaleInst);
-    #endif
+#endif
 
     // test de la méthode FInst()
     std::vector<double> FInst = matriceInst.FInst();
-    #ifdef DEBUG
+#ifdef DEBUG
     afficheVecteur(FInst);
-    #endif
+#endif
 
     // test de la méthode matriceTridiagInst()
-    ResolutionInst resolutionInst(matriceInst, param.M);
+    ResolutionInst resolutionInst(param);
 
     // test de la méthode decompositionLUInst()
     // resolutionInst.LUInst(matriceInst, param.M);
@@ -126,10 +128,7 @@ int main(int argc, char *argv[])
     // test de la méthode ecritureCSVInst()
     resolutionInst.ecritureCSVInst(TInstaRes, "../CSV/instationnaire.csv");
 
-    
-
     resolutionInst.VTKParPasDeTemps(TInstaRes, param.N);
-    
-    
+
     return 0;
 }
