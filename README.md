@@ -44,7 +44,7 @@ TFinal 300
 N 600
 Mx 50 My 10 Mz 30
 ```
-Parametres principaux:
+## Parametres principaux:
 - Geometrie: `Lx`, `Ly`, `Lz`
 - Discretisation: `M` (nombre de points), `N` (nombre de pas de temps), `Mx`, `My`, `Mz` (maillage)
 - Proprietes physiques: `rho`, `Cp`, `kapa`
