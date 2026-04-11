@@ -134,7 +134,7 @@ std::vector<double> operator+(const std::vector<double> &a, const std::vector<do
 // méthode resoudreInst() pour résoudre le système instationnaire
 std::vector<std::vector<double>> ResolutionInst::resoudreInst(MatInst matInsta, int taille) const
 {
-    // initialisation de la solution
+    // ===== ÉTAPE 1 : Initialiser T0 =====
     std::vector<double> T0;
     std::vector<std::vector<double>> TInstaRes(NInsta, std::vector<double>(taille, 0));
     for (int i = 0; i < taille; i++)
@@ -142,7 +142,7 @@ std::vector<std::vector<double>> ResolutionInst::resoudreInst(MatInst matInsta, 
         T0.push_back(TeInsta);
     }
 
-    // creation du vecteur CFL
+    // ===== ÉTAPE 2 : Créer le vecteur CFL =====
     std::vector<double> CFL;
     CFL.push_back(0);
     for (int i = 1; i < taille - 1; i++)
@@ -152,7 +152,6 @@ std::vector<std::vector<double>> ResolutionInst::resoudreInst(MatInst matInsta, 
     CFL.push_back(0);
 
 #ifdef DEBUG
-    // affichage du vecteur CFL
     std::cout << "\nCFL : " << std::endl;
     for (int i = 0; i < taille; i++)
     {
@@ -160,29 +159,82 @@ std::vector<std::vector<double>> ResolutionInst::resoudreInst(MatInst matInsta, 
     }
 #endif
 
-    // calcul de LU
+    // ===== ÉTAPE 3 : DÉCOMPOSITION LU (NOUVEAU CODE) =====
+    // Initialiser les vecteurs diagInstL et surDiagInstU
+    const_cast<ResolutionInst *>(this)->diagInstL.clear();
+    const_cast<ResolutionInst *>(this)->surDiagInstU.clear();
+
+    // Extraire les diagonales de la matrice
+    std::vector<double> diag(taille);      // diagonale principale
+    std::vector<double> subdiag(taille);   // sous-diagonale
+    std::vector<double> superdiag(taille); // sur-diagonale
+
+    for (int i = 0; i < taille; i++)
+    {
+        diag[i] = matInsta.getDiagInst(i);
+        if (i < taille - 1)
+            superdiag[i] = matInsta.getSurDiagInst(i);
+        if (i > 0)
+            subdiag[i] = matInsta.getSousDiagInst(i);
+    }
+
+    // Décomposition LU tridiagonale (algorithme de Thomas)
+    std::vector<double> cp(taille); // c_prime = U sur-diagonale
+
+    // Premier élément
+    const_cast<ResolutionInst *>(this)->diagInstL.push_back(diag[0]);
+    if (diag[0] != 0)
+        cp[0] = superdiag[0] / diag[0];
+    else
+        cp[0] = 0;
+    const_cast<ResolutionInst *>(this)->surDiagInstU.push_back(cp[0]);
+
+    // Forward sweep
+    for (int i = 1; i < taille; i++)
+    {
+        double diagL = diag[i] - subdiag[i] * cp[i - 1];
+        const_cast<ResolutionInst *>(this)->diagInstL.push_back(diagL);
+
+        if (i < taille - 1)
+        {
+            if (diagL != 0)
+                cp[i] = superdiag[i] / diagL;
+            else
+                cp[i] = 0;
+            const_cast<ResolutionInst *>(this)->surDiagInstU.push_back(cp[i]);
+        }
+    }
+
+#ifdef DEBUG
+    std::cout << "\nDiagInstL : " << std::endl;
+    for (int i = 0; i < diagInstL.size(); i++)
+        std::cout << diagInstL[i] << " ";
+    std::cout << "\nSurDiagInstU : " << std::endl;
+    for (int i = 0; i < surDiagInstU.size(); i++)
+        std::cout << surDiagInstU[i] << " ";
+    std::cout << std::endl;
+#endif
+
+    // ===== ÉTAPE 4 : Construire L et U pour affichage (optionnel) =====
     std::vector<MatInst> LU = FactoLU(matInsta);
 
 #ifdef DEBUG
-    // affichage de la matrice L et U pour vérifier
     std::cout << "\nMatrice L : " << std::endl;
     AfMat(LU[0].matriceTridiagInst());
     std::cout << "\nMatrice U : " << std::endl;
     AfMat(LU[1].matriceTridiagInst());
 #endif
 
-    // calcul de T^n+1 en fonction de T^n
+    // ===== ÉTAPE 5 : Boucle temporelle =====
     for (int n = 1; n < NInsta; n++)
     {
-        // création du vecteur F
         std::vector<double> Y;
         std::vector<double> YInsta;
 
-        // appel de la méthode LYFInst()
+        // Résoudre LY = F (F = matInsta.FInst() + CFL * T0)
         Y = LYFInst(YInsta, LU[0], taille, matInsta.FInst() + CFL * T0);
 
 #ifdef DEBUG
-        // affichage de la solution
         std::cout << "\nYInsta : " << std::endl;
         for (int i = 0; i < taille; i++)
         {
@@ -190,12 +242,11 @@ std::vector<std::vector<double>> ResolutionInst::resoudreInst(MatInst matInsta, 
         }
 #endif
 
-        // appel de la méthode UXYInst()
+        // Résoudre UX = Y
         std::vector<double> X(taille, 0);
         T0 = UXYInst(Y, taille);
 
 #ifdef DEBUG
-        // affichage de la solution
         std::cout << "\nT0 : " << std::endl;
         for (int i = 0; i < taille; i++)
         {
@@ -204,7 +255,7 @@ std::vector<std::vector<double>> ResolutionInst::resoudreInst(MatInst matInsta, 
         std::cout << std::endl;
 #endif
 
-        // // remplissage de la solution
+        // Remplir la solution
         for (int i = 0; i < taille; i++)
         {
             TInstaRes[n][i] = T0[i];
@@ -212,7 +263,6 @@ std::vector<std::vector<double>> ResolutionInst::resoudreInst(MatInst matInsta, 
     }
 
 #ifdef DEBUG
-    // affichage la dernière température
     std::cout << "\nTInstaRes : " << std::endl;
     for (int i = 0; i < taille; i++)
     {
