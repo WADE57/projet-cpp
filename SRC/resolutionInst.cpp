@@ -339,53 +339,9 @@ void ResolutionInst::VTKParPasDeTemps(std::vector<std::vector<double>> Solve, in
                 }
             }
 
-            // fichier << "POINT_DATA " << MxInsta * MyInsta * MzInsta << std::endl;
-            // fichier << "FIELD FieldData 1" << std::endl;
-            // fichier << "sol1 1 " << MxInsta * MyInsta * MzInsta << " float" << std::endl;
-
-            // // Enfin, on met la valeur du champ pour chaque point en respectant l’ordre qui a été utilisé précédemment avec le maillage
-            // int k = 0, xk;
-            // double a, b;
-            // double hx = par.Lx / MxInsta;
-            // double hy = par.Ly / MyInsta;
-            // double hz = par.Lz / MzInsta;
-
-            // for (int i = 0; i < MxInsta; i++)
-            // {
-            //     //localisation du point xi00 dans le maillage 1D (i.e. trouver k tel que xi00 ∈ [xk, xk+1])
-            //     double xi00 = i * hx;
-            //     for (int j = 0; j < MInsta; j++)
-            //     {
-            //         double xk = j * hInsta;
-            //         if (xi00 >= xk && xi00 <= xk + hInsta)
-            //         {
-            //             k = j;
-            //             break;
-            //         }
-            //     }
-
-            //     // calcul de a et b
-            //     double temp = a * xi00 + b;
-            //     Solve[t][i] = temp;
-            // }
-
-            // // Ecriture des valeurs du champ
-            // std::vector<double> temps = {15, 30, 60, 90, 150, 210};
-
             fichier << "POINT_DATA " << MxInsta * MyInsta * MzInsta << std::endl;
             fichier << "SCALARS sol" << t << " float" << std::endl;
             fichier << "LOOKUP_TABLE default" << std::endl;
-
-            // for (int k = 0; k < MzInsta; k++)
-            // {
-            //     for (int j = 0; j < MyInsta; j++)
-            //     {
-            //         for (int i = 0; i < MxInsta; i++)
-            //         {
-            //             fichier << Solve[t][i + MxInsta * (j + MyInsta * k)] << std::endl;
-            //         }
-            //     }
-            // }
 
             for (int k = 0; k < MzInsta; k++)
             {
